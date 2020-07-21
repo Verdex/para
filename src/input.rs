@@ -124,19 +124,20 @@ mod test {
 
     #[test]
     fn should_parse_symbols_with_double_quote() -> Result<(), InputError> {
-        let mut input = Input { data: &r#"sym " 123 , /* /* */ */ <>"#.char_indices().collect::<Vec<(usize, char)>>() };
+        let mut input = Input { data: &r#"sym "blah 123 , /* /* */ */ <>"#.char_indices().collect::<Vec<(usize, char)>>() };
         let mut symbols = vec![];
         while input.more() {
             let sym = input.parse_symbol()?; 
             symbols.push(sym);
         }
         assert_eq!( input.data.into_iter().map(|(_,x)| x).collect::<String>(), "".to_string() ); 
-        assert_eq!( symbols.len(), 5 );
+        assert_eq!( symbols.len(), 6 );
         assert_eq!( symbols[0].value, "sym" );
         assert_eq!( symbols[1].value, "\"" );
-        assert_eq!( symbols[2].value, "123" );
-        assert_eq!( symbols[3].value, "," );
-        assert_eq!( symbols[4].value, "<>" );
+        assert_eq!( symbols[2].value, "blah" );
+        assert_eq!( symbols[3].value, "123" );
+        assert_eq!( symbols[4].value, "," );
+        assert_eq!( symbols[5].value, "<>" );
         Ok(())
     }
 }
