@@ -16,9 +16,15 @@ pub struct PSym {
 }
 
 #[derive(Debug)]
+pub struct PChar {
+    pub value : char,
+    pub index : usize,
+}
+
+#[derive(Debug)]
 pub enum InputError { 
     EndOfFileInComment,
-    EndOfFileInSymbol,
+    EndOfFile,
 }
 
 impl<'a> Input<'a> {
@@ -42,6 +48,23 @@ impl<'a> Input<'a> {
         }
     }
 
+    pub fn get_char(&mut self) -> Result<PChar, InputError> {
+        match self.data {
+            [(i, v), ..] => Ok(PChar { index: *i, value: *v }),
+            [] => Err(InputError::EndOfFile),
+        }
+    }
+
+    pub fn next(&mut self) -> Result<(), InputError> {
+        match self.data {
+            [_, rest @ ..] => {
+                self.data = rest;
+                Ok(())
+            },
+            [] => Err(InputError::EndOfFile),
+        }
+    }
+
     pub fn parse_symbol(&mut self) -> Result<PSym, InputError> {
         self.clear()?;
          
@@ -51,7 +74,7 @@ impl<'a> Input<'a> {
         let mut end = 0;
 
         match d {
-            [] => return Err(InputError::EndOfFileInSymbol),
+            [] => return Err(InputError::EndOfFile),
             [(i,c), rest @ ..] if *c == '"' => {
                 self.data = rest; 
                 return Ok(PSym { start: *i, end: *i, value: "\"".to_string() });
