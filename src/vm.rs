@@ -10,6 +10,7 @@ pub fn run_vm(file_name : &str) {
     let mut input = Input::new( &file );
 
     let mut stack : Vec<Atom> = vec![];
+    let mut dict : Vec<Atom> = vec![];
 
     while input.more() {
         let sym = input.parse_symbol().unwrap();
